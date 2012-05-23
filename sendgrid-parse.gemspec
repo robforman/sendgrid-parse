@@ -14,7 +14,7 @@ Gem::Specification.new do |gem|
   gem.name          = "sendgrid-parse"
   gem.require_paths = ["lib"]
   gem.version       = Sendgrid::Parse::VERSION
-  gem.add_dependency "json"
-  gem.add_dependency "iconv" unless RUBY_VERSION >= '1.9'
-  gem.add_development_dependency "rspec", "2.10.0"
+  gem.add_dependency "json", "~> 1.7.3"
+  gem.add_dependency "iconv", "~> 0.1" unless RUBY_VERSION >= '1.9'
+  gem.add_development_dependency "rspec", "~> 2.10.0"
 end
