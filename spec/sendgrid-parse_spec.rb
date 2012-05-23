@@ -81,6 +81,16 @@ describe Sendgrid::Parse::EncodableHash do
     new_params[:charsets].should eql "{\"text\":\"UTF-8\"}"
   end
 
+  it "should symbolize on initialize" do
+    params = {
+      'charsets' => '{"text":"WINDOWS-1252"}',
+      'text' => test_string_1_windows1252_encoded
+    }
+
+    new_params = Sendgrid::Parse::EncodableHash.new(params).encode("UTF-8")
+    new_params.has_key?(:text).should eql(true)
+  end
+
   if RUBY_VERSION >= '1.9'
     it "should correctly change encoding types of charsets" do
       params = {

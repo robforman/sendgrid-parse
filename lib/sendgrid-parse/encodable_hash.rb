@@ -13,6 +13,8 @@ module Sendgrid
       end
 
       def initialize(component)
+        # Symbolize keys
+        component.keys.each { |key| component[(key.to_sym rescue key) || key] = component.delete(key) }
         raise 'Missing required key :charsets for encoding.' unless component.has_key?(:charsets)
         super
       end
