@@ -16,4 +16,5 @@ Gem::Specification.new do |gem|
   gem.version       = Sendgrid::Parse::VERSION
   gem.add_dependency "json", "~> 1.7.3"
   gem.add_development_dependency "rspec", "~> 2.10.0"
+  gem.add_development_dependency "active_support", "~> 3.0.0"
 end

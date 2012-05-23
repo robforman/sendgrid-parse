@@ -1,5 +1,6 @@
 # encoding: UTF-8
 require 'sendgrid-parse'
+require 'active_support/hash_with_indifferent_access'
 
 describe Sendgrid::Parse::EncodableHash do
   test_string_1 = "Hello €"
@@ -89,6 +90,20 @@ describe Sendgrid::Parse::EncodableHash do
 
     new_params = Sendgrid::Parse::EncodableHash.new(params).encode("UTF-8")
     new_params.has_key?(:text).should eql(true)
+  end
+
+  it "should symbolize active_support hashes correctly" do
+    params = {
+      'charsets' => '{"text":"WINDOWS-1252"}',
+      'text' => test_string_1_windows1252_encoded
+    }
+
+    hash = HashWithIndifferentAccess.new(params)
+
+    new_params = Sendgrid::Parse::EncodableHash.new(hash).encode("UTF-8")
+    new_params.has_key?(:text).should eql(true)
+    new_params[:charsets].should eql "{\"text\":\"UTF-8\"}"
+
   end
 
   if RUBY_VERSION >= '1.9'
