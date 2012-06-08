@@ -55,8 +55,10 @@ module Sendgrid
     protected
       def _encode(value, from, to)
         if RUBY_VERSION >= '1.9'
-          value = value.force_encoding(from)
-          value = value.encode(to, :invalid => :replace, :undef => :replace, :replace => '')
+          if value.respond_to? :force_encoding && value.respond_to? :encode
+            value = value.force_encoding(from)
+            value = value.encode(to, :invalid => :replace, :undef => :replace, :replace => '')
+          end
         else
           value = Iconv.conv("#{to}//IGNORE", from, value)
         end
