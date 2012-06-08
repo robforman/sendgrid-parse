@@ -55,7 +55,7 @@ module Sendgrid
     protected
       def _encode(value, from, to)
         if RUBY_VERSION >= '1.9'
-          if value.respond_to? :force_encoding && value.respond_to? :encode
+          if value.respond_to? :force_encoding
             value = value.force_encoding(from)
             value = value.encode(to, :invalid => :replace, :undef => :replace, :replace => '')
           end
