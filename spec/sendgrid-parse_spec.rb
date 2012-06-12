@@ -47,6 +47,17 @@ describe Sendgrid::Parse::EncodableHash do
     new_params[:text].should eql(test_string_1)
   end
 
+  it "should not claim to have encoded skipped 'charsets' encoding types" do
+    params = {
+      :charsets => '{"text":"x-user-defined"}',
+      :text => test_string_1
+    }
+
+    new_params = Sendgrid::Parse::EncodableHash.new(params).encode("UTF-8")
+    new_params[:text].should eql(test_string_1)
+    new_params[:charsets].should eql "{\"text\":\"x-user-defined\"}"
+  end
+
   it "should strip unconvertible characters" do
     params = {
       :charsets => '{"text":"UTF-8"}',

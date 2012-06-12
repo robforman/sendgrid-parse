@@ -1,3 +1,4 @@
+# encoding: UTF-8
 require 'json'
 require 'delegate'
 require 'iconv' unless RUBY_VERSION >= '1.9'
@@ -25,6 +26,8 @@ module Sendgrid
       end
 
       def encode(to_encoding, ignore=[])
+        _test_encoding(to_encoding)
+
         component = __getobj__.dup
         ignore.each { |e| component.delete(e) if component.has_key?(e)}
 
@@ -36,8 +39,12 @@ module Sendgrid
         component.each do |key, value|
           if charsets.has_key?(key)
             from_encoding = charsets[key]
-            component[key] = _encode(component[key], from_encoding, to_encoding)
-            charsets[key] = to_encoding
+            transcoded_value = _encode(component[key], from_encoding, to_encoding) rescue nil
+
+            if transcoded_value
+              component[key] = transcoded_value
+              charsets[key] = to_encoding
+            end
           else
             # If we weren't told, set it to the target encoding type.
             component[key] = _encode(component[key], to_encoding, to_encoding)
@@ -53,19 +60,22 @@ module Sendgrid
       end
 
     protected
+      def _test_encoding(to)
+        if RUBY_VERSION >= '1.9'
+          "".force_encoding("UTF-8").encode(to)
+        else
+          Iconv.conv("#{to}", "UTF-8", "")
+        end
+      end
+
       def _encode(value, from, to)
         if RUBY_VERSION >= '1.9'
           if value.respond_to? :force_encoding
-            from_enc = Encoding.find(from) rescue nil
-
-            value = value.force_encoding(from) if from_enc
+            value = value.force_encoding(from)
             value = value.encode(to, :invalid => :replace, :undef => :replace, :replace => '')
           end
         else
-          # Iconv doesn't have a way to find the charset, so we have to just try it and rescue
-          from_enc = Iconv.conv("UTF-8", from, "test string") rescue nil
-
-          value = Iconv.conv("#{to}//IGNORE", from, value) if from_enc
+          value = Iconv.conv("#{to}//IGNORE", from, value)
         end
 
         value
