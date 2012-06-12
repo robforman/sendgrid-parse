@@ -56,11 +56,16 @@ module Sendgrid
       def _encode(value, from, to)
         if RUBY_VERSION >= '1.9'
           if value.respond_to? :force_encoding
-            value = value.force_encoding(from)
+            from_enc = Encoding.find(from) rescue nil
+
+            value = value.force_encoding(from) if from_enc
             value = value.encode(to, :invalid => :replace, :undef => :replace, :replace => '')
           end
         else
-          value = Iconv.conv("#{to}//IGNORE", from, value)
+          # Iconv doesn't have a way to find the charset, so we have to just try it and rescue
+          from_enc = Iconv.conv("UTF-8", from, "test string") rescue nil
+
+          value = Iconv.conv("#{to}//IGNORE", from, value) if from_enc
         end
 
         value

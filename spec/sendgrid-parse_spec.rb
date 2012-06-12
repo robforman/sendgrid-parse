@@ -37,6 +37,16 @@ describe Sendgrid::Parse::EncodableHash do
     new_params[:text].should eql(test_string_1)
   end
 
+  it "should skip unknown 'charsets' encoding types" do
+    params = {
+      :charsets => '{"text":"x-user-defined"}',
+      :text => test_string_1
+    }
+
+    new_params = Sendgrid::Parse::EncodableHash.new(params).encode("UTF-8")
+    new_params[:text].should eql(test_string_1)
+  end
+
   it "should strip unconvertible characters" do
     params = {
       :charsets => '{"text":"UTF-8"}',
@@ -107,6 +117,15 @@ describe Sendgrid::Parse::EncodableHash do
   end
 
   if RUBY_VERSION >= '1.9'
+    it "should blow up on unknown target encoding type" do
+      params = {
+        :charsets => '{"text":"UTF-8"}',
+        :text => test_string_1
+      }
+
+      expect { new_params = Sendgrid::Parse::EncodableHash.new(params).encode("UTF-88") }.to raise_error(Encoding::ConverterNotFoundError)
+    end
+
     it "should correctly change encoding types of charsets" do
       params = {
         :charsets => '{"text":"WINDOWS-1252"}',
@@ -134,6 +153,15 @@ describe Sendgrid::Parse::EncodableHash do
       new_params = Sendgrid::Parse::EncodableHash.new(params).encode("UTF-8")
       new_params[:text].encoding.should eql(Encoding::UTF_8)
       new_params[:subject].encoding.should eql(Encoding::UTF_8)
+    end
+  else
+    it "should blow up on unknown target encoding type" do
+      params = {
+        :charsets => '{"text":"UTF-8"}',
+        :text => test_string_1
+      }
+
+      expect { new_params = Sendgrid::Parse::EncodableHash.new(params).encode("UTF-88") }.to raise_error(Iconv::InvalidEncoding)
     end
   end
 end
