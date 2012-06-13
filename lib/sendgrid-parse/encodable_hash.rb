@@ -45,9 +45,6 @@ module Sendgrid
               component[key] = transcoded_value
               charsets[key] = to_encoding
             end
-          else
-            # If we weren't told, set it to the target encoding type.
-            component[key] = _encode(component[key], to_encoding, to_encoding)
           end
         end
 

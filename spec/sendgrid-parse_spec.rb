@@ -149,22 +149,6 @@ describe Sendgrid::Parse::EncodableHash do
       new_params = Sendgrid::Parse::EncodableHash.new(params).encode("UTF-8")
       new_params[:text].encoding.should eql(Encoding::UTF_8)
     end
-
-    it "should correctly force encoding types of non-specified fields" do
-      params = {
-        :charsets => '{"text":"WINDOWS-1252"}',
-        :text => test_string_1_windows1252_encoded,
-        :subject => "Test subject"
-      }
-
-      new_params = Sendgrid::Parse::EncodableHash.new(params).encode("WINDOWS-1252")
-      new_params[:text].encoding.should eql(Encoding::Windows_1252)
-      new_params[:subject].encoding.should eql(Encoding::Windows_1252)
-
-      new_params = Sendgrid::Parse::EncodableHash.new(params).encode("UTF-8")
-      new_params[:text].encoding.should eql(Encoding::UTF_8)
-      new_params[:subject].encoding.should eql(Encoding::UTF_8)
-    end
   else
     it "should blow up on unknown target encoding type" do
       params = {
