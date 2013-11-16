@@ -1,6 +1,6 @@
 # Sendgrid::Parse
 
-Gem to dynamically set or change the encoding type for fields, ie params from SendGrid Parse API (http://docs.sendgrid.com/documentation/api/parse-api-2/)
+Gem to dynamically set or change the encoding type for fields, ie params from SendGrid Parse API (http://sendgrid.com/docs/API_Reference/Webhooks/parse.html)
 
 Requires JSON for parsing 'charsets' envelope.
 
